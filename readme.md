@@ -2,7 +2,8 @@ Use this Flight Deal Finder App to find the cheapest flight to your list of dest
 
 Update the variables.py with your api keys and details.     
 Update the destinations you want to visit and the highest price you are willing pay for their flights, in your Google Sheet.  
-Also update the sheet with users in your club who want to be notified via email. Link your Google Sheet to Sheety API.   
+Also update the sheet with users in your club who want to be notified via email. Can use [this code](https://replit.com/@phalgunirn/flightclubcustomeracquisition#main.py) to sign up users to the club.    
+Link your Google Sheet to Sheety API.   
 Sample Google Sheet:        
 ![img_2.png](images/img_2.png)         
 ![img_3.png](images/img_3.png)         
