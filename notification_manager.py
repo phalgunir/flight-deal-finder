@@ -1,5 +1,5 @@
-from twilio.rest import Client
 import smtplib
+from twilio.rest import Client
 from variables import *
 
 
@@ -13,11 +13,12 @@ class NotificationManager:
         print(f'SMS Status: {message.status}')
 
 
-    def send_email(self, email_text):
+    def send_email(self, email_text, to_email_list):
         """Requires email body as argument. Sends email to your email address using SMTPLib module."""
-        with smtplib.SMTP('smtp.gmail.com') as connection:
-            connection.starttls()
-            connection.login(MY_EMAIL, MY_PASSWORD)
-            connection.sendmail(from_addr=MY_EMAIL, to_addrs=MY_EMAIL,
-                                msg=f'Subject: Low Flight Price Alert!\n\n{email_text}')
-            print('Email sent')
+        for to_email in to_email_list:
+            with smtplib.SMTP('smtp.gmail.com') as connection:
+                connection.starttls()
+                connection.login(MY_EMAIL, MY_PASSWORD)
+                connection.sendmail(from_addr=MY_EMAIL, to_addrs=to_email,
+                                    msg=f'Subject: Low Flight Price Alert!\n\n{email_text}')
+                print(f'Email sent to {to_email}')

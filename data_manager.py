@@ -7,24 +7,42 @@ from variables import *
 class DataManager:
 
     def __init__(self):
-        """Calls get_sheet_data to fetch Google Sheet data. Updates IATA code if it is missing."""
-        self.sheet_endpoint = SHEETY_ENDPOINT
+        """Fetches all Google Sheet data. Updates IATA code if it is missing."""
         self.request_headers = {
             'Authorization': f'Basic {SHEETY_AUTHORIZATION}'
         }
-        for destination in self.get_sheet_data():
+
+        for destination in self.get_price_sheet_data():
             if destination['iataCode'] == '':
                 self.update_iata_codes_in_sheet(destination)
 
-        self.sheet_data = self.get_sheet_data()
+        self.price_sheet_data = self.get_price_sheet_data()
+        self.user_sheet_data = self.get_user_sheet_data()
+        self.to_email_list = self.get_emails_in_user_sheet()
 
 
-    def get_sheet_data(self):
-        """Fetches Google Sheet data using Sheety API."""
-        get_sheet = requests.get(self.sheet_endpoint, headers=self.request_headers)
+    def get_price_sheet_data(self):
+        """Returns the 'prices' google sheet data using Sheety API."""
+        get_sheet = requests.get(f'{SHEETY_ENDPOINT}/prices', headers=self.request_headers)
         if not get_sheet.raise_for_status():
             sheet_data = get_sheet.json()['prices']
             return sheet_data
+        return MY_SHEET_PRICES_DATA
+
+
+    def get_user_sheet_data(self):
+        """Returns the 'users' google sheet data using Sheety API."""
+        get_sheet = requests.get(f'{SHEETY_ENDPOINT}/users', headers=self.request_headers)
+        if not get_sheet.raise_for_status():
+            sheet_data = get_sheet.json()['users']
+            return sheet_data
+        return MY_SHEET_USERS_DATA
+
+
+    def get_emails_in_user_sheet(self):
+        """Returns the list of emails in the 'users' sheet"""
+        to_emails = [user['email'] for user in self.user_sheet_data]
+        return to_emails
 
 
     def update_iata_codes_in_sheet(self, destination):
@@ -37,6 +55,6 @@ class DataManager:
                 'iataCode': iata_code,
             }
         }
-        response = requests.put(f'{self.sheet_endpoint}/{destination["id"]}', json=request_params, headers=self.request_headers)
+        response = requests.put(f'{SHEETY_ENDPOINT}/{destination["id"]}', json=request_params, headers=self.request_headers)
         if not response.raise_for_status():
             print(f'Updated iata for city {destination["city"]}: {iata_code}')
